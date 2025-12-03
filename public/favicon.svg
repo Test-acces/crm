@@ -1,0 +1,18 @@
+<!--?xml version="1.0" encoding="UTF-8"?-->
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title2 desc2">
+  <title id="title2">Logo CRM — mono</title>
+  <desc id="desc2">Version monochrome du logo minimaliste.</desc>
+
+  <rect width="256" height="256" rx="40" fill="#111827"></rect>
+  <g transform="translate(64,80)">
+    <circle cx="0" cy="0" r="32" fill="#ffffff"></circle>
+    <rect x="-36" y="44" width="72" height="12" rx="6" fill="#ffffff"></rect>
+  </g>
+
+  <g transform="translate(150,100)">
+    <circle cx="0" cy="0" r="28" fill="#ffffff"></circle>
+    <rect x="-30" y="40" width="60" height="10" rx="5" fill="#ffffff"></rect>
+  </g>
+
+  <path d="M130 170 L140 150 L170 120" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
