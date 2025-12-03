@@ -5,10 +5,12 @@ namespace App\Providers;
 use App\Events\ClientCreated;
 use App\Events\ContactCreated;
 use App\Events\TaskCreated;
+use App\Events\TaskUpdated;
 use App\Events\ActivityCreated;
 use App\Listeners\SendClientNotification;
 use App\Listeners\SendContactNotification;
 use App\Listeners\SendTaskNotification;
+use App\Listeners\SendTaskUpdatedNotification;
 use App\Listeners\SendActivityNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
@@ -28,6 +30,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         TaskCreated::class => [
             SendTaskNotification::class,
+        ],
+        TaskUpdated::class => [
+            SendTaskUpdatedNotification::class,
         ],
         ActivityCreated::class => [
             SendActivityNotification::class,

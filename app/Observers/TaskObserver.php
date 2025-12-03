@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Task;
 use App\Models\Activity;
+use App\Events\TaskUpdated;
 
 class TaskObserver
 {
@@ -46,6 +47,9 @@ class TaskObserver
                 'description' => $description,
                 'date' => now(),
             ]);
+
+            // Fire the TaskUpdated event
+            TaskUpdated::dispatch($task);
         }
     }
 
