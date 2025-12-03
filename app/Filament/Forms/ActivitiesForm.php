@@ -2,28 +2,25 @@
 
 namespace App\Filament\Forms;
 
-use Filament\Schemas;
+use App\Models\ActivityType;
+use Filament\Forms;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\DateTimePicker;
 
 class ActivitiesForm
 {
     public static function schema(): array
     {
         return [
-            Schemas\Components\Select::make('user_id')
+            Select::make('user_id')
                 ->relationship('user', 'name')
                 ->required(),
-            Schemas\Components\Select::make('type')
-                ->options([
-                    'call' => 'Call',
-                    'email' => 'Email',
-                    'meeting' => 'Meeting',
-                    'note' => 'Note',
-                    'task_created' => 'Task Created',
-                    'task_updated' => 'Task Updated',
-                ])
+            Select::make('type')
+                ->options(ActivityType::options())
                 ->required(),
-            Schemas\Components\Textarea::make('description'),
-            Schemas\Components\DateTimePicker::make('date')
+            Textarea::make('description'),
+            DateTimePicker::make('date')
                 ->default(now())
                 ->required(),
         ];

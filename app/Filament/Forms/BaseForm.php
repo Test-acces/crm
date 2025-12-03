@@ -37,10 +37,10 @@ abstract class BaseForm
     /**
      * Get standard text input configuration
      */
-    protected static function textInput(string $name, string $label, array $options = []): \Filament\Schemas\Components\TextInput
+    protected static function textInput(string $name, string $label, array $options = []): \Filament\Forms\Components\TextInput
     {
         return static::configureField(
-            \Filament\Schemas\Components\TextInput::make($name)->label($label),
+            \Filament\Forms\Components\TextInput::make($name)->label($label),
             $options
         );
     }
@@ -48,9 +48,9 @@ abstract class BaseForm
     /**
      * Get standard email input configuration
      */
-    protected static function emailInput(string $name = 'email', string $label = 'Email'): \Filament\Schemas\Components\TextInput
+    protected static function emailInput(string $name = 'email', string $label = 'Email'): \Filament\Forms\Components\TextInput
     {
-        return \Filament\Schemas\Components\TextInput::make($name)
+        return \Filament\Forms\Components\TextInput::make($name)
             ->label($label)
             ->email()
             ->required()
@@ -61,9 +61,9 @@ abstract class BaseForm
     /**
      * Get standard select configuration
      */
-    protected static function selectInput(string $name, string $label, array $options): \Filament\Schemas\Components\Select
+    protected static function selectInput(string $name, string $label, array $options): \Filament\Forms\Components\Select
     {
-        return \Filament\Schemas\Components\Select::make($name)
+        return \Filament\Forms\Components\Select::make($name)
             ->label($label)
             ->options($options)
             ->required()
@@ -73,10 +73,10 @@ abstract class BaseForm
     /**
      * Get standard textarea configuration
      */
-    protected static function textareaInput(string $name, string $label, array $options = []): \Filament\Schemas\Components\Textarea
+    protected static function textareaInput(string $name, string $label, array $options = []): \Filament\Forms\Components\Textarea
     {
         return static::configureField(
-            \Filament\Schemas\Components\Textarea::make($name)->label($label),
+            \Filament\Forms\Components\Textarea::make($name)->label($label),
             array_merge(['max' => 1000], $options)
         );
     }

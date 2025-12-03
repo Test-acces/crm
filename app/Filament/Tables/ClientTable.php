@@ -18,14 +18,17 @@ class ClientTable
                 Tables\Columns\TextColumn::make('phone'),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
-                    ->formatStateUsing(fn (ClientStatus $state): string => $state->label())
-                    ->color(fn (ClientStatus $state): string => $state->color()),
+                    ->formatStateUsing(fn ($state): string => $state->label())
+                    ->color(fn ($state): string => $state->color()),
                 Tables\Columns\TextColumn::make('notes')->limit(50),
                 Tables\Columns\TextColumn::make('created_at')->dateTime(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
-                    ->options(ClientStatus::options()),
+                    ->options([
+                        'active' => 'Active',
+                        'inactive' => 'Inactive',
+                    ]),
             ])
             ->actions([
                 Actions\EditAction::make(),

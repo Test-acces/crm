@@ -36,6 +36,8 @@ class ChangeTaskStatusAction extends BaseAction
 
                 // Log activity
                 $record->activities()->create([
+                    'client_id' => $record->client_id,
+                    'contact_id' => $record->contact_id,
                     'type' => 'task_updated',
                     'description' => "Status changed from {$oldStatus->label()} to {$newStatus->label()}",
                     'date' => now(),

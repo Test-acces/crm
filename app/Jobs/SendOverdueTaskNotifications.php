@@ -35,31 +35,54 @@ class SendOverdueTaskNotifications implements ShouldQueue
             ->with(['user', 'client', 'contact'])
             ->get();
 
-        if ($overdueTasks->isEmpty()) {
-            Log::info('No overdue tasks found');
+        // Get tasks due in the next 3 days
+        $upcomingTasks = Task::where('due_date', '>=', now())
+            ->where('due_date', '<=', now()->addDays(3))
+            ->where('status', '!=', 'completed')
+            ->with(['user', 'client', 'contact'])
+            ->get();
+
+        if ($overdueTasks->isEmpty() && $upcomingTasks->isEmpty()) {
+            Log::info('No overdue or upcoming tasks found');
             return;
         }
 
         // Group tasks by assigned user
-        $tasksByUser = $overdueTasks->groupBy('user_id');
+        $overdueTasksByUser = $overdueTasks->groupBy('user_id');
+        $upcomingTasksByUser = $upcomingTasks->groupBy('user_id');
 
-        foreach ($tasksByUser as $userId => $tasks) {
+        $allUserIds = collect(array_keys($overdueTasksByUser->toArray() + $upcomingTasksByUser->toArray()));
+
+        foreach ($allUserIds as $userId) {
+            $userOverdueTasks = $overdueTasksByUser->get($userId, collect());
+            $userUpcomingTasks = $upcomingTasksByUser->get($userId, collect());
+
             if (!$userId) {
                 // Tasks without assigned user - notify all users
                 $users = User::all();
                 foreach ($users as $user) {
-                    Notification::send($user, new OverdueTaskNotification($tasks, true));
+                    if ($userOverdueTasks->isNotEmpty()) {
+                        Notification::send($user, new OverdueTaskNotification($userOverdueTasks, true));
+                    }
+                    if ($userUpcomingTasks->isNotEmpty()) {
+                        Notification::send($user, new \App\Notifications\UpcomingTaskNotification($userUpcomingTasks, true));
+                    }
                 }
                 continue;
             }
 
             $user = User::find($userId);
             if ($user) {
-                Notification::send($user, new OverdueTaskNotification($tasks, false));
+                if ($userOverdueTasks->isNotEmpty()) {
+                    Notification::send($user, new OverdueTaskNotification($userOverdueTasks, false));
+                }
+                if ($userUpcomingTasks->isNotEmpty()) {
+                    Notification::send($user, new \App\Notifications\UpcomingTaskNotification($userUpcomingTasks, false));
+                }
             }
         }
 
-        Log::info("Sent overdue task notifications for {$overdueTasks->count()} tasks");
+        Log::info("Sent notifications for {$overdueTasks->count()} overdue and {$upcomingTasks->count()} upcoming tasks");
     }
 
     /**

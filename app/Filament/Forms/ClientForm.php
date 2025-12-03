@@ -2,7 +2,6 @@
 
 namespace App\Filament\Forms;
 
-use App\Models\ClientStatus;
 use Filament\Schemas;
 
 class ClientForm extends BaseForm
@@ -30,8 +29,10 @@ class ClientForm extends BaseForm
                 'placeholder' => 'Enter client address',
             ]),
 
-            static::selectInput('status', 'Status', ClientStatus::options())
-                ->default(ClientStatus::ACTIVE->value),
+            static::selectInput('status', 'Status', [
+                'active' => 'Active',
+                'inactive' => 'Inactive',
+            ])->default('active'),
 
             static::textareaInput('notes', 'Notes', [
                 'required' => false,

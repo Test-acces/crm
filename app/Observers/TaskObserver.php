@@ -112,10 +112,14 @@ class TaskObserver
 
             switch ($field) {
                 case 'status':
-                    $descriptions[] = "status changed from {$oldValue} to {$newValue}";
+                    $oldLabel = $oldValue instanceof \UnitEnum ? $oldValue->label() : $oldValue;
+                    $newLabel = $newValue instanceof \UnitEnum ? $newValue->label() : $newValue;
+                    $descriptions[] = "status changed from {$oldLabel} to {$newLabel}";
                     break;
                 case 'priority':
-                    $descriptions[] = "priority changed from {$oldValue} to {$newValue}";
+                    $oldLabel = $oldValue instanceof \UnitEnum ? $oldValue->label() : $oldValue;
+                    $newLabel = $newValue instanceof \UnitEnum ? $newValue->label() : $newValue;
+                    $descriptions[] = "priority changed from {$oldLabel} to {$newLabel}";
                     break;
                 case 'user_id':
                     $oldUser = $oldValue ? \App\Models\User::find($oldValue)?->name : 'unassigned';

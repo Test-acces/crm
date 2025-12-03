@@ -28,9 +28,10 @@ class Client extends Model
         'notes',
     ];
 
-    protected $casts = [
-        'status' => ClientStatus::class,
-    ];
+    // Temporarily removed enum cast to avoid instantiation issues
+    // protected $casts = [
+    //     'status' => ClientStatus::class,
+    // ];
 
     // Relationships
     public function contacts(): HasMany

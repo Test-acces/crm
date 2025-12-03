@@ -3,7 +3,10 @@
 namespace App\Listeners;
 
 use App\Events\TaskCreated;
+use App\Models\User;
+use App\Notifications\TaskCreatedNotification;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 
 class SendTaskNotification
 {
@@ -20,9 +23,15 @@ class SendTaskNotification
             'created_at' => $event->task->created_at,
         ]);
 
-        // Here you could send notifications, emails, etc.
-        // For example:
-        // Mail::to($assignedUser->email)->send(new TaskAssignedEmail($event->task));
-        // Notification::send($users, new TaskCreatedNotification($event->task));
+        // Send notification to assigned user if exists
+        if ($event->task->user_id) {
+            Notification::send($event->task->user, new TaskCreatedNotification($event->task));
+        } else {
+            // Notify all users about unassigned task
+            $users = User::all();
+            foreach ($users as $user) {
+                Notification::send($user, new TaskCreatedNotification($event->task, true));
+            }
+        }
     }
 }

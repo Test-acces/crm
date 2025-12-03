@@ -10,6 +10,9 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
+    ->withCommands([
+        __DIR__.'/../app/Console/Commands',
+    ])
     ->withMiddleware(function (Middleware $middleware): void {
         //
     })
@@ -17,8 +20,8 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule): void {
-        // Send overdue task notifications daily at 9 AM
-        $schedule->command('crm:send-overdue-notifications')
+        // Send task notifications (overdue and upcoming) daily at 9 AM
+        $schedule->command('crm:send-task-notifications')
             ->dailyAt('09:00')
             ->withoutOverlapping()
             ->runInBackground();

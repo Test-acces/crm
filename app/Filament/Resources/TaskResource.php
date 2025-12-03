@@ -6,9 +6,8 @@ use App\Filament\Forms\TaskForm;
 use App\Filament\Pages as Pages;
 use App\Filament\Tables\TaskTable;
 use App\Models\Task;
-use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
-use Filament\Support\Icons\Heroicon;
+use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 
 class TaskResource extends Resource
@@ -19,9 +18,6 @@ class TaskResource extends Resource
     {
         return 'heroicon-o-clipboard-document-list';
     }
-
-
-
 
     public static function form(Schema $schema): Schema
     {

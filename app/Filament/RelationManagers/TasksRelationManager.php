@@ -5,6 +5,9 @@ namespace App\Filament\RelationManagers;
 use App\Filament\Actions\ChangeTaskStatusAction;
 use App\Filament\Forms\TaskForm;
 use App\Models\Task;
+use App\Models\TaskPriority;
+use App\Models\TaskStatus;
+use Filament\Actions;
 use Filament\Schemas\Schema;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
@@ -34,18 +37,12 @@ class TasksRelationManager extends RelationManager
                     ->placeholder('No contact'),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'pending' => 'gray',
-                        'in_progress' => 'warning',
-                        'completed' => 'success',
-                    }),
+                    ->formatStateUsing(fn ($state) => $state->label())
+                    ->color(fn ($state) => $state->color()),
                 Tables\Columns\TextColumn::make('priority')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'low' => 'success',
-                        'medium' => 'warning',
-                        'high' => 'danger',
-                    }),
+                    ->formatStateUsing(fn ($state) => $state->label())
+                    ->color(fn ($state) => $state->color()),
                 Tables\Columns\TextColumn::make('due_date')
                     ->date()
                     ->sortable(),
@@ -58,30 +55,22 @@ class TasksRelationManager extends RelationManager
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
-                    ->options([
-                        'pending' => 'Pending',
-                        'in_progress' => 'In Progress',
-                        'completed' => 'Completed',
-                    ]),
+                    ->options(TaskStatus::options()),
                 Tables\Filters\SelectFilter::make('priority')
-                    ->options([
-                        'low' => 'Low',
-                        'medium' => 'Medium',
-                        'high' => 'High',
-                    ]),
+                    ->options(TaskPriority::options()),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                Actions\CreateAction::make(),
             ])
             ->actions([
                 ChangeTaskStatusAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Actions\EditAction::make(),
+                Actions\ViewAction::make(),
+                Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');
