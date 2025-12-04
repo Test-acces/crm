@@ -8,6 +8,7 @@ use App\Traits\HasStatus;
 use App\Traits\HasTasks;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 
@@ -26,6 +27,7 @@ class Client extends Model
         'address',
         'status',
         'notes',
+        'user_id',
     ];
 
     // Temporarily removed enum cast to avoid instantiation issues
@@ -34,6 +36,11 @@ class Client extends Model
     // ];
 
     // Relationships
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function contacts(): HasMany
     {
         return $this->hasMany(Contact::class);

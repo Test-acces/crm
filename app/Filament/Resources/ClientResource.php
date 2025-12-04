@@ -94,6 +94,15 @@ class ClientResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery();
+        $query = parent::getEloquentQuery();
+
+        $user = auth()->user();
+
+        if ($user && !$user->canSeeAllClients()) {
+            // Commercial users only see their assigned clients
+            $query->where('user_id', $user->id);
+        }
+
+        return $query;
     }
 }

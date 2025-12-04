@@ -38,6 +38,10 @@ class ClientForm extends BaseForm
                 'required' => false,
                 'placeholder' => 'Additional notes about the client',
             ]),
+
+            static::selectInput('user_id', 'Assigned User', [
+                'options' => \App\Models\User::pluck('name', 'id')->toArray(),
+            ]),
         ];
     }
 }

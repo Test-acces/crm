@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -43,17 +44,47 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'role' => UserRole::class,
         ];
     }
 
     /**
      * Check if user has a specific role.
-     * Simple implementation for basic role checking.
      */
     public function hasRole(string $role): bool
     {
-        // For now, no users have admin role
-        // This can be extended later with a proper role system
-        return false;
+        return $this->role?->value === $role;
+    }
+
+    /**
+     * Check if user has admin role.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('admin');
+    }
+
+    /**
+     * Check if user can see all clients.
+     */
+    public function canSeeAllClients(): bool
+    {
+        return $this->role?->canSeeAllClients() ?? false;
+    }
+
+    /**
+     * Check if user can manage users.
+     */
+    public function canManageUsers(): bool
+    {
+        return $this->role?->canManageUsers() ?? false;
+    }
+
+    /**
+     * Check if user can access settings.
+     */
+    public function canAccessSettings(): bool
+    {
+        return $this->role?->canAccessSettings() ?? false;
     }
 }
