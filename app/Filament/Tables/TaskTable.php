@@ -2,6 +2,7 @@
 
 namespace App\Filament\Tables;
 
+use App\Filament\Actions\ChangeTaskStatusAction;
 use App\Models\TaskPriority;
 use App\Models\TaskStatus;
 use Filament\Actions;
@@ -15,6 +16,7 @@ class TaskTable
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('description')->limit(50)->tooltip(fn ($record) => $record->description),
                 Tables\Columns\TextColumn::make('client.name')->label('Client'),
                 Tables\Columns\TextColumn::make('contact.name')->label('Contact'),
                 Tables\Columns\TextColumn::make('status')
@@ -36,6 +38,7 @@ class TaskTable
                     ->options(TaskPriority::options()),
             ])
             ->actions([
+                ChangeTaskStatusAction::make(),
                 Actions\EditAction::make(),
             ])
             ->bulkActions([

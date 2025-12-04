@@ -45,9 +45,8 @@ class ChangeTaskStatusAction extends BaseAction
                 ]);
 
                 $this->sendSuccessNotification(
-                    "Task '{$record->title}' status changed to {$newStatus->label()}"
+                    "Task '{$record->title}' status changed from {$oldStatus->label()} to {$newStatus->label()}"
                 );
-            })
-            ->visible(fn (Task $record) => auth()->user()->can('changeStatus', $record));
+            });
     }
 }
