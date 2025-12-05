@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Activity extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'client_id',
@@ -23,7 +24,7 @@ class Activity extends Model
 
     protected $casts = [
         'date' => 'datetime',
-        'type' => ActivityType::class,
+        // 'type' => ActivityType::class,
     ];
 
     // Constants
@@ -86,6 +87,28 @@ class Activity extends Model
     }
 
     // Accessors & Mutators
+    public function getTypeAttribute($value)
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        try {
+            return ActivityType::from($value);
+        } catch (\ValueError $e) {
+            return ActivityType::NOTE;
+        }
+    }
+
+    public function setTypeAttribute($value): void
+    {
+        if ($value instanceof ActivityType) {
+            $this->attributes['type'] = $value->value;
+        } else {
+            $this->attributes['type'] = $value;
+        }
+    }
+
     public function getFormattedDateAttribute(): string
     {
         return $this->date->format('M j, Y g:i A');
@@ -99,19 +122,27 @@ class Activity extends Model
     public function getRelatedEntityNameAttribute(): string
     {
         if ($this->task_id) {
-            return "Task: {$this->task->title}";
+            return $this->relationLoaded('task') ? "Task: {$this->task->title}" : "Task: {$this->task_id}";
         }
 
         if ($this->contact_id) {
-            return "Contact: {$this->contact->name}";
+            return $this->relationLoaded('contact') ? "Contact: {$this->contact->name}" : "Contact: {$this->contact_id}";
         }
 
-        return "Client: {$this->client->name}";
+        return $this->relationLoaded('client') ? "Client: {$this->client->name}" : "Client: {$this->client_id}";
     }
 
     // Business Logic Methods
     public static function log(array $attributes): self
     {
+        $user = auth()->user();
+        $clientId = $attributes['client_id'] ?? null;
+
+        // Check if user can log activities for this client
+        if ($user && !$user->can('logForClient', [self::class, $clientId])) {
+            throw new \Illuminate\Auth\Access\AuthorizationException('You are not authorized to log activities for this client.');
+        }
+
         return self::create($attributes);
     }
 

@@ -55,19 +55,24 @@ class ClientResource extends Resource
         return ClientTable::configure($table)
             ->actions([
                 Actions\ActionGroup::make([
-                    Actions\ViewAction::make(),
-                    Actions\EditAction::make(),
-                    ToggleClientStatusAction::make(),
-                    QuickLogActivityAction::make(),
+                    Actions\ViewAction::make()
+                        ->visible(fn (Client $record) => auth()->user()->can('view', $record)),
+                    Actions\EditAction::make()
+                        ->visible(fn (Client $record) => auth()->user()->can('update', $record)),
+                    ToggleClientStatusAction::make()
+                        ->visible(fn (Client $record) => auth()->user()->can('toggleStatus', $record)),
+                    QuickLogActivityAction::make()
+                        ->visible(fn (Client $record) => auth()->user()->can('view', $record)),
                     Actions\DeleteAction::make()
                         ->requiresConfirmation()
-                        ->visible(fn (Client $record) => $record->canBeDeleted()),
+                        ->visible(fn (Client $record) => auth()->user()->can('delete', $record) && $record->canBeDeleted()),
                 ]),
             ])
             ->bulkActions([
                 Actions\BulkActionGroup::make([
                     Actions\DeleteBulkAction::make()
-                        ->requiresConfirmation(),
+                        ->requiresConfirmation()
+                        ->visible(fn () => auth()->user()->can('delete', Client::class)),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');

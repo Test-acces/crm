@@ -89,8 +89,8 @@ class RelationsTest extends TestCase
         // Test that deleting client cascades or sets null appropriately
         $client->delete();
 
-        $this->assertDatabaseMissing('clients', ['id' => $client->id]);
-        // Contact should be deleted due to cascade
-        $this->assertDatabaseMissing('contacts', ['id' => $contact->id]);
+        $this->assertSoftDeleted('clients', ['id' => $client->id]);
+        // Contact should still exist since client is only soft deleted
+        $this->assertDatabaseHas('contacts', ['id' => $contact->id]);
     }
 }

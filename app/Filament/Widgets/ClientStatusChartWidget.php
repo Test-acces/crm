@@ -4,15 +4,36 @@ namespace App\Filament\Widgets;
 
 use App\Models\Client;
 use Filament\Widgets\ChartWidget;
+use Illuminate\Database\Eloquent\Builder;
 
 class ClientStatusChartWidget extends ChartWidget
 {
+    protected static ?int $sort = 2;
+
     protected ?string $heading = 'Clients par Statut';
+
+    protected int | string | array $columnSpan = 1;
+
+    protected function getFilteredClientQuery(): Builder
+    {
+        $query = Client::query();
+
+        $user = auth()->user();
+
+        if ($user && !$user->canSeeAllClients()) {
+            // Commercial users only see their assigned clients
+            $query->where('user_id', $user->id);
+        }
+
+        return $query;
+    }
 
     protected function getData(): array
     {
-        $active = Client::where('status', 'active')->count();
-        $inactive = Client::where('status', 'inactive')->count();
+        $clientQuery = $this->getFilteredClientQuery();
+
+        $active = (clone $clientQuery)->where('status', 'active')->count();
+        $inactive = (clone $clientQuery)->where('status', 'inactive')->count();
 
         return [
             'datasets' => [

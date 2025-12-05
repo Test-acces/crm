@@ -9,6 +9,7 @@ use App\Models\Task;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class TaskResource extends Resource
 {
@@ -40,8 +41,29 @@ class TaskResource extends Resource
     {
         return [
             'index' => Pages\ListTasks::route('/'),
-            'create' => Pages\CreateTask                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ::route('/create'),
+            'create' => Pages\CreateTask::route('/create'),
             'edit' => Pages\EditTask::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        $user = auth()->user();
+
+        if ($user && !$user->isAdmin()) {
+            // Non-admins can only see tasks assigned to them or related to their clients
+            $query->where(function ($q) use ($user) {
+                $q->where('user_id', $user->id)
+                  ->orWhereHas('client', function ($clientQuery) use ($user) {
+                      if ($user->hasRole('commercial')) {
+                          $clientQuery->where('user_id', $user->id);
+                      }
+                  });
+            });
+        }
+
+        return $query;
     }
 }

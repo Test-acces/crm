@@ -25,10 +25,7 @@ class ClientTable
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
-                    ->options([
-                        'active' => 'Active',
-                        'inactive' => 'Inactive',
-                    ]),
+                    ->options(ClientStatus::options()),
             ])
             ->actions([
                 Actions\EditAction::make(),

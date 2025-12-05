@@ -9,11 +9,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 
 class Contact extends Model
 {
-    use HasFactory, HasTasks;
+    use HasFactory, HasTasks, SoftDeletes;
 
     protected $fillable = [
         'client_id',
@@ -80,7 +81,7 @@ class Contact extends Model
 
     public function canBeDeleted(): bool
     {
-        return $this->tasks()->doesntExist();
+        return $this->tasks()->doesntExist() && $this->activities()->doesntExist();
     }
 
     public function updatePosition(?string $position): bool

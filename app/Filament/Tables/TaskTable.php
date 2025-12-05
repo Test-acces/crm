@@ -3,6 +3,7 @@
 namespace App\Filament\Tables;
 
 use App\Filament\Actions\ChangeTaskStatusAction;
+use App\Models\Task;
 use App\Models\TaskPriority;
 use App\Models\TaskStatus;
 use Filament\Actions;
@@ -38,8 +39,10 @@ class TaskTable
                     ->options(TaskPriority::options()),
             ])
             ->actions([
-                ChangeTaskStatusAction::make(),
-                Actions\EditAction::make(),
+                ChangeTaskStatusAction::make()
+                    ->visible(fn (Task $record) => auth()->user()->can('changeStatus', $record)),
+                Actions\EditAction::make()
+                    ->visible(fn (Task $record) => auth()->user()->can('update', $record)),
             ])
             ->bulkActions([
                 Actions\BulkActionGroup::make([

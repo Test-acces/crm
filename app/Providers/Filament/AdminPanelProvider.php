@@ -10,8 +10,6 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets\AccountWidget;
-use Filament\Widgets\FilamentInfoWidget;
 use Filament\Navigation\MenuItem;
 use Filament\Navigation\NavigationItem;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -43,8 +41,11 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Widgets\CrmStatsWidget::class,
                 \App\Filament\Widgets\TaskStatusChartWidget::class,
                 \App\Filament\Widgets\ClientStatusChartWidget::class,
-                AccountWidget::class,
-                FilamentInfoWidget::class,
+                \App\Filament\Widgets\ClientEvolutionChartWidget::class,
+                \App\Filament\Widgets\TaskEvolutionChartWidget::class,
+                \App\Filament\Widgets\RecentActivitiesWidget::class,
+                \App\Filament\Widgets\OverdueTasksWidget::class,
+                \App\Filament\Widgets\UpcomingTasksWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

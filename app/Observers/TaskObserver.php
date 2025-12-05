@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Task;
 use App\Models\Activity;
+use App\Events\TaskCreated;
 use App\Events\TaskUpdated;
 use Illuminate\Support\Facades\Auth;
 
@@ -11,6 +12,9 @@ class TaskObserver
 {
     public function created(Task $task): void
     {
+        // Dispatch event
+        TaskCreated::dispatch($task);
+
         // Log activity
         Activity::log([
             'task_id' => $task->id,

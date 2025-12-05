@@ -16,18 +16,18 @@ class ToggleClientStatusAction extends BaseAction
     {
         parent::setUp();
 
-        $this->label(fn (Client $record) => $record->is_active ? 'Deactivate' : 'Activate')
-            ->icon(fn (Client $record) => $record->is_active ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle')
-            ->color(fn (Client $record) => $record->is_active ? 'danger' : 'success')
+        $this->label(fn (Client $record) => $record->isActive ? 'Deactivate' : 'Activate')
+            ->icon(fn (Client $record) => $record->isActive ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle')
+            ->color(fn (Client $record) => $record->isActive ? 'danger' : 'success')
             ->requiresConfirmation()
-            ->modalHeading(fn (Client $record) => $record->is_active ? 'Deactivate Client' : 'Activate Client')
-            ->modalDescription(fn (Client $record) => $record->is_active
+            ->modalHeading(fn (Client $record) => $record->isActive ? 'Deactivate Client' : 'Activate Client')
+            ->modalDescription(fn (Client $record) => $record->isActive
                 ? 'Are you sure you want to deactivate this client? They will not be able to access the system.'
                 : 'Are you sure you want to activate this client? They will be able to access the system again.'
             )
             ->action(function (Client $record) {
                 $oldStatus = $record->status;
-                $newStatus = $record->is_active
+                $newStatus = $record->isActive
                     ? ClientStatus::INACTIVE
                     : ClientStatus::ACTIVE;
 
@@ -42,7 +42,7 @@ class ToggleClientStatusAction extends BaseAction
                 ]);
 
                 $this->sendSuccessNotification(
-                    "Client '{$record->name}' has been " . ($record->is_active ? 'activated' : 'deactivated')
+                    "Client '{$record->name}' has been " . ($record->isActive ? 'deactivated' : 'activated')
                 );
             })
             ->visible(fn (Client $record) => auth()->user()->can('toggleStatus', $record));

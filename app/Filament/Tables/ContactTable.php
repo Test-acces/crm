@@ -2,6 +2,7 @@
 
 namespace App\Filament\Tables;
 
+use App\Models\Contact;
 use Filament\Actions;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -22,7 +23,8 @@ class ContactTable
                 //
             ])
             ->actions([
-                Actions\EditAction::make(),
+                Actions\EditAction::make()
+                    ->visible(fn (Contact $record) => auth()->user()->can('update', $record)),
             ])
             ->bulkActions([
                 Actions\BulkActionGroup::make([

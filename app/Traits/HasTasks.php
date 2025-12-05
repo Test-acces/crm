@@ -65,11 +65,10 @@ trait HasTasks
     public function getRecentActivities(int $limit = 5): Collection
     {
         return $this->tasks()
-            ->with('activities')
-            ->get()
-            ->pluck('activities')
-            ->flatten()
-            ->sortByDesc('date')
-            ->take($limit);
+            ->join('activities', 'tasks.id', '=', 'activities.task_id')
+            ->select('activities.*')
+            ->orderBy('activities.date', 'desc')
+            ->limit($limit)
+            ->get();
     }
 }

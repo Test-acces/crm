@@ -63,11 +63,17 @@ abstract class BaseForm
      */
     protected static function selectInput(string $name, string $label, array $options): \Filament\Forms\Components\Select
     {
-        return \Filament\Forms\Components\Select::make($name)
+        $field = \Filament\Forms\Components\Select::make($name)
             ->label($label)
-            ->options($options)
-            ->required()
-            ->placeholder('Select an option');
+            ->options($options['options'] ?? $options)
+            ->required($options['required'] ?? true)
+            ->placeholder($options['placeholder'] ?? 'Select an option');
+
+        if (isset($options['visible'])) {
+            $field->visible($options['visible']);
+        }
+
+        return $field;
     }
 
     /**

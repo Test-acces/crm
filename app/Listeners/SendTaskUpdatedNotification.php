@@ -23,10 +23,24 @@ class SendTaskUpdatedNotification
             'updated_at' => $event->task->updated_at,
         ]);
 
-        // Notify all users about the task update
+        // Notify users who should be aware of this task update
+        $this->notifyUsersAboutTaskUpdate($event->task);
+    }
+
+    /**
+     * Notify appropriate users about task updates based on their permissions.
+     */
+    private function notifyUsersAboutTaskUpdate($task): void
+    {
         $users = User::all();
+
         foreach ($users as $user) {
-            Notification::send($user, new TaskUpdatedNotification($event->task));
+            // Notify if user is assigned to task, can see all clients, or is commercial responsible for client
+            if ($task->user_id === $user->id ||
+                $user->canSeeAllClients() ||
+                ($user->hasRole('commercial') && $task->client && $task->client->user_id === $user->id)) {
+                Notification::send($user, new TaskUpdatedNotification($task));
+            }
         }
     }
 }

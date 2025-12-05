@@ -88,6 +88,17 @@ class ContactResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->with(['client', 'tasks']);
+        $query = parent::getEloquentQuery()->with(['client', 'tasks']);
+
+        $user = auth()->user();
+
+        if ($user && !$user->canSeeAllClients()) {
+            // Commercial users only see contacts of their assigned clients
+            $query->whereHas('client', function ($clientQuery) use ($user) {
+                $clientQuery->where('user_id', $user->id);
+            });
+        }
+
+        return $query;
     }
 }

@@ -35,6 +35,19 @@ class ActivityPolicy
     }
 
     /**
+     * Determine whether the user can log activities for a specific client.
+     */
+    public function logForClient(User $user, ?int $clientId): bool
+    {
+        if (!$clientId) {
+            return true; // Allow logging activities not tied to a client
+        }
+
+        // User can log activities for clients they can see
+        return $user->canSeeAllClients() || $user->hasRole('commercial');
+    }
+
+    /**
      * Determine whether the user can update the activity.
      */
     public function update(User $user, Activity $activity): bool

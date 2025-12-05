@@ -20,7 +20,7 @@ class StoreClientRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255', 'min:2', 'regex:/^[a-zA-Z\s]+$/'],
+            'name' => ['required', 'string', 'max:255', 'min:2', 'regex:/^[\p{L}\s\-\.\']+$/u'],
             'email' => ['required', 'email:rfc,dns', 'unique:clients,email'],
             'phone' => ['nullable', 'string', 'regex:/^(\+?\d{1,3}[- ]?)?\d{10,}$/'],
             'address' => ['nullable', 'string', 'max:500'],

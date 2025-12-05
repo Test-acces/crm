@@ -9,14 +9,22 @@ class ContactForm extends BaseForm
 {
     public static function schema(): array
     {
+        $user = auth()->user();
+        $clientsQuery = Client::query();
+
+        if ($user && !$user->canSeeAllClients()) {
+            $clientsQuery->where('user_id', $user->id);
+        }
+
+        $clients = $clientsQuery->pluck('name', 'id')->toArray();
+
         return [
-            static::selectInput('client_id', 'Client', collect(Client::pluck('name', 'id'))->toArray())
-                ->relationship('client', 'name')
+            static::selectInput('client_id', 'Client', $clients)
                 ->required(),
 
             static::textInput('name', 'Full Name', [
                 'required' => true,
-                'rules' => ['string', 'regex:/^[a-zA-Z\s]+$/', 'min:2'],
+                'rules' => ['string', 'regex:/^[\p{L}\s\-\.\']+$/u', 'min:2'],
                 'placeholder' => 'Enter contact full name',
             ]),
 

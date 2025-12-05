@@ -48,6 +48,12 @@ class QuickLogActivityAction extends BaseAction
                     $taskId = $record->id;
                 }
 
+                // Check permissions before creating activity
+                if (!auth()->user()->can('logForClient', [Activity::class, $clientId])) {
+                    $this->sendErrorNotification('You are not authorized to log activities for this client.');
+                    return;
+                }
+
                 Activity::create([
                     'client_id' => $clientId,
                     'contact_id' => $contactId,
@@ -60,6 +66,6 @@ class QuickLogActivityAction extends BaseAction
 
                 $this->sendSuccessNotification('The activity has been successfully logged.');
             })
-            ->visible(fn () => auth()->user()->can('log', Activity::class));
+            ->visible(fn ($record) => auth()->user()->can('log', Activity::class));
     }
 }

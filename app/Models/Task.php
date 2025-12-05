@@ -7,12 +7,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 use Carbon\Carbon;
 
 class Task extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'client_id',
@@ -27,8 +28,8 @@ class Task extends Model
 
     protected $casts = [
         'due_date' => 'date',
-        'status' => TaskStatus::class,
-        'priority' => TaskPriority::class,
+        // 'status' => TaskStatus::class,
+        // 'priority' => TaskPriority::class,
     ];
 
     // Constants
@@ -107,24 +108,68 @@ class Task extends Model
     }
 
     // Accessors & Mutators
+    public function getStatusAttribute($value)
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        try {
+            return TaskStatus::from($value);
+        } catch (\ValueError $e) {
+            return TaskStatus::PENDING;
+        }
+    }
+
+    public function setStatusAttribute($value): void
+    {
+        if ($value instanceof TaskStatus) {
+            $this->attributes['status'] = $value->value;
+        } else {
+            $this->attributes['status'] = $value;
+        }
+    }
+
+    public function getPriorityAttribute($value)
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        try {
+            return TaskPriority::from($value);
+        } catch (\ValueError $e) {
+            return TaskPriority::MEDIUM;
+        }
+    }
+
+    public function setPriorityAttribute($value): void
+    {
+        if ($value instanceof TaskPriority) {
+            $this->attributes['priority'] = $value->value;
+        } else {
+            $this->attributes['priority'] = $value;
+        }
+    }
+
     public function getIsPendingAttribute(): bool
     {
-        return $this->status === self::STATUS_PENDING;
+        return $this->status?->value === self::STATUS_PENDING;
     }
 
     public function getIsInProgressAttribute(): bool
     {
-        return $this->status === self::STATUS_IN_PROGRESS;
+        return $this->status?->value === self::STATUS_IN_PROGRESS;
     }
 
     public function getIsCompletedAttribute(): bool
     {
-        return $this->status === self::STATUS_COMPLETED;
+        return $this->status?->value === self::STATUS_COMPLETED;
     }
 
     public function getIsOverdueAttribute(): bool
     {
-        return $this->due_date && $this->due_date->isPast() && !$this->is_completed;
+        return $this->due_date && $this->due_date->isPast() && !$this->isCompleted;
     }
 
     public function getDaysUntilDueAttribute(): ?int
@@ -149,6 +194,6 @@ class Task extends Model
     public function canBeEditedBy(User $user): bool
     {
         // Business rule: only assigned user or admin can edit
-        return $this->user_id === $user->id || $user->hasRole('admin');
+        return ($this->user_id && $this->user_id === $user->id) || $user->isAdmin();
     }
 }

@@ -20,12 +20,7 @@ class UserForm
                 ->maxLength(255),
             Schemas\Components\Select::make('role')
                 ->label('Role')
-                ->options([
-                    'admin' => 'Admin',
-                    'manager' => 'Manager',
-                    'commercial' => 'Commercial',
-                    'viewer' => 'Viewer',
-                ])
+                ->options(\App\Models\UserRole::options())
                 ->default('viewer')
                 ->required(),
             Schemas\Components\TextInput::make('password')

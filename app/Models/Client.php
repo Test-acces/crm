@@ -10,11 +10,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 
 class Client extends Model
 {
-    use HasFactory, HasStatus, CanBeDeleted, HasTasks;
+    use HasFactory, HasStatus, CanBeDeleted, HasTasks, SoftDeletes;
 
     protected $dispatchesEvents = [
         'created' => ClientCreated::class,
@@ -30,10 +31,10 @@ class Client extends Model
         'user_id',
     ];
 
-    // Temporarily removed enum cast to avoid instantiation issues
-    // protected $casts = [
-    //     'status' => ClientStatus::class,
-    // ];
+    // Status casting is handled by HasStatus trait
+    protected $casts = [
+        // 'status' => ClientStatus::class,
+    ];
 
     // Relationships
     public function user(): BelongsTo
@@ -63,11 +64,11 @@ class Client extends Model
     }
 
     /**
-     * Get contacts count with eager loaded contacts
+     * Get contacts count
      */
     public function getContactsCount(): int
     {
-        return $this->contacts->count();
+        return $this->contacts()->count();
     }
 
     /**

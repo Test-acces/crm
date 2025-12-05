@@ -55,6 +55,6 @@ class ClientCrudTest extends TestCase
 
         $client->delete();
 
-        $this->assertDatabaseMissing('clients', ['id' => $client->id]);
+        $this->assertSoftDeleted('clients', ['id' => $client->id]);
     }
 }

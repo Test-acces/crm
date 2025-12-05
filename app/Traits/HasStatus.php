@@ -11,8 +11,18 @@ trait HasStatus
      */
     public function getStatusAttribute($value)
     {
+        if ($value === null) {
+            return null;
+        }
+
         $enumClass = $this->getStatusEnumClass();
-        return $enumClass::from($value);
+
+        try {
+            return $enumClass::from($value);
+        } catch (\ValueError $e) {
+            // If the value is invalid, return the first enum case as default
+            return $enumClass::cases()[0];
+        }
     }
 
     /**

@@ -11,7 +11,7 @@ class ClientForm extends BaseForm
         return [
             static::textInput('name', 'Client Name', [
                 'required' => true,
-                'rules' => ['string', 'regex:/^[a-zA-Z\s]+$/', 'min:2'],
+                'rules' => ['string', 'regex:/^[\p{L}\s\-\.\']+$/u', 'min:2'],
                 'placeholder' => 'Enter client name',
             ]),
 
@@ -29,10 +29,7 @@ class ClientForm extends BaseForm
                 'placeholder' => 'Enter client address',
             ]),
 
-            static::selectInput('status', 'Status', [
-                'active' => 'Active',
-                'inactive' => 'Inactive',
-            ])->default('active'),
+            static::selectInput('status', 'Status', \App\Models\ClientStatus::options())->default('active'),
 
             static::textareaInput('notes', 'Notes', [
                 'required' => false,
@@ -41,6 +38,8 @@ class ClientForm extends BaseForm
 
             static::selectInput('user_id', 'Assigned User', [
                 'options' => \App\Models\User::pluck('name', 'id')->toArray(),
+                'visible' => fn () => auth()->user()->canManageUsers() || auth()->user()->isAdmin(),
+                'required' => false,
             ]),
         ];
     }

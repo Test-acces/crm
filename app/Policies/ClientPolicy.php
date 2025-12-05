@@ -58,8 +58,13 @@ class ClientPolicy extends BasePolicy
     /**
      * Determine whether the user can delete the client.
      */
-    public function delete(User $user, $model): bool
+    public function delete(User $user, $model = null): bool
     {
+        // If no model is provided (bulk actions), check general permission
+        if ($model === null) {
+            return $user->hasRole('admin') || $user->hasRole('manager');
+        }
+
         return $user->hasRole('admin') || $user->hasRole('manager');
     }
 

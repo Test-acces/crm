@@ -27,10 +27,24 @@ class SendTaskNotification
         if ($event->task->user_id) {
             Notification::send($event->task->user, new TaskCreatedNotification($event->task));
         } else {
-            // Notify all users about unassigned task
-            $users = User::all();
-            foreach ($users as $user) {
-                Notification::send($user, new TaskCreatedNotification($event->task, true));
+            // Notify users who should be aware of unassigned tasks based on their role
+            $this->notifyUsersAboutUnassignedTask($event->task);
+        }
+    }
+
+    /**
+     * Notify appropriate users about unassigned tasks based on their permissions.
+     */
+    private function notifyUsersAboutUnassignedTask($task): void
+    {
+        $users = User::all();
+
+        foreach ($users as $user) {
+            // Only notify users who can see all clients (admins/managers) or
+            // commercial users who are responsible for the client
+            if ($user->canSeeAllClients() ||
+                ($user->hasRole('commercial') && $task->client && $task->client->user_id === $user->id)) {
+                Notification::send($user, new TaskCreatedNotification($task, true));
             }
         }
     }

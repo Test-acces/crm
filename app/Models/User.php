@@ -44,8 +44,36 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'role' => UserRole::class,
+            // 'role' => UserRole::class,
         ];
+    }
+
+    /**
+     * Get the role attribute as enum
+     */
+    public function getRoleAttribute($value)
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        try {
+            return UserRole::from($value);
+        } catch (\ValueError $e) {
+            return UserRole::VIEWER;
+        }
+    }
+
+    /**
+     * Set the role attribute from enum
+     */
+    public function setRoleAttribute($value): void
+    {
+        if ($value instanceof UserRole) {
+            $this->attributes['role'] = $value->value;
+        } else {
+            $this->attributes['role'] = $value;
+        }
     }
 
     /**
