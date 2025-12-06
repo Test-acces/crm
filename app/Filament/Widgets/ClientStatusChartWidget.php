@@ -14,6 +14,23 @@ class ClientStatusChartWidget extends ChartWidget
 
     protected int | string | array $columnSpan = 1;
 
+    protected static ?string $height = '400px';
+
+    protected function getOptions(): array
+    {
+        return [
+            'plugins' => [
+                'legend' => [
+                    'display' => true,
+                    'position' => 'bottom',
+                ],
+            ],
+            'accessibility' => [
+                'enabled' => true,
+            ],
+        ];
+    }
+
     protected function getFilteredClientQuery(): Builder
     {
         $query = Client::query();

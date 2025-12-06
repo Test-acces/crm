@@ -20,6 +20,26 @@ class TaskResource extends Resource
         return 'heroicon-o-clipboard-document-list';
     }
 
+    public static function getNavigationGroup(): ?string
+    {
+        return 'CRM Management';
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return 3;
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::overdue()->count();
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'danger';
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema->schema(TaskForm::schema());

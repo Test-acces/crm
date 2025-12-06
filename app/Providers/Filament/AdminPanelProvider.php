@@ -6,9 +6,9 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
+use App\Filament\Pages\Dashboard;
 use Filament\Support\Colors\Color;
 use Filament\Navigation\MenuItem;
 use Filament\Navigation\NavigationItem;
@@ -27,6 +27,9 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->brandName('CRM Léger')
+            ->brandLogo(asset('favicon.svg'))
+            ->brandLogoHeight('2rem')
             ->login()
             ->colors([
                 'primary' => Color::Blue,
@@ -36,16 +39,13 @@ class AdminPanelProvider extends PanelProvider
             ->pages([
                 Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
                 \App\Filament\Widgets\CrmStatsWidget::class,
-                \App\Filament\Widgets\TaskStatusChartWidget::class,
                 \App\Filament\Widgets\ClientStatusChartWidget::class,
                 \App\Filament\Widgets\ClientEvolutionChartWidget::class,
-                \App\Filament\Widgets\TaskEvolutionChartWidget::class,
-                \App\Filament\Widgets\RecentActivitiesWidget::class,
-                \App\Filament\Widgets\OverdueTasksWidget::class,
-                \App\Filament\Widgets\UpcomingTasksWidget::class,
+                \App\Filament\Widgets\RecentActivitiesStatsWidget::class,
+                \App\Filament\Widgets\TaskStatusChartWidget::class,
+                \App\Filament\Widgets\PriorityTasksWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -65,13 +65,17 @@ class AdminPanelProvider extends PanelProvider
             ->databaseNotificationsPolling('30s')
             ->userMenuItems([
                 MenuItem::make()
+                    ->label('Role: ' . (auth()->user()?->role?->label() ?? 'Modeste'))
+                    ->icon(auth()->user()?->role?->icon() ?? 'heroicon-o-question-mark-circle'),
+                MenuItem::make()
                     ->label('Profile')
                     ->url(fn () => '/admin/profile')
                     ->icon('heroicon-o-user'),
                 MenuItem::make()
                     ->label('Settings')
                     ->url(fn () => '/admin/settings')
-                    ->icon('heroicon-o-cog'),
+                    ->icon('heroicon-o-cog')
+                    ->visible(fn () => auth()->user()?->canAccessSettings() ?? false),
             ]);
     }
 }

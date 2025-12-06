@@ -4,24 +4,44 @@ namespace App\Filament\Widgets;
 
 use App\Models\Task;
 use Filament\Widgets\ChartWidget;
-use Illuminate\Database\Eloquent\Builder;
 
 class TaskStatusChartWidget extends ChartWidget
 {
-    protected static ?int $sort = 3;
+    protected static ?int $sort = 5;
 
     protected ?string $heading = 'Tâches par Statut';
 
     protected int | string | array $columnSpan = 1;
 
-    protected function getFilteredTaskQuery(): Builder
+    protected static ?string $height = '350px';
+
+    protected function getOptions(): array
+    {
+        return [
+            'indexAxis' => 'y', // Horizontal bars
+            'plugins' => [
+                'legend' => [
+                    'display' => false,
+                ],
+            ],
+            'scales' => [
+                'x' => [
+                    'beginAtZero' => true,
+                    'ticks' => [
+                        'stepSize' => 1,
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    protected function getData(): array
     {
         $query = Task::query();
 
         $user = auth()->user();
 
         if ($user && !$user->isAdmin()) {
-            // Non-admins can only see tasks assigned to them or related to their clients
             $query->where(function ($q) use ($user) {
                 $q->where('user_id', $user->id)
                   ->orWhereHas('client', function ($clientQuery) use ($user) {
@@ -32,16 +52,9 @@ class TaskStatusChartWidget extends ChartWidget
             });
         }
 
-        return $query;
-    }
-
-    protected function getData(): array
-    {
-        $taskQuery = $this->getFilteredTaskQuery();
-
-        $pending = (clone $taskQuery)->where('status', 'pending')->count();
-        $inProgress = (clone $taskQuery)->where('status', 'in_progress')->count();
-        $completed = (clone $taskQuery)->where('status', 'completed')->count();
+        $pending = (clone $query)->where('status', 'pending')->count();
+        $inProgress = (clone $query)->where('status', 'in_progress')->count();
+        $completed = (clone $query)->where('status', 'completed')->count();
 
         return [
             'datasets' => [
@@ -49,9 +62,9 @@ class TaskStatusChartWidget extends ChartWidget
                     'label' => 'Tâches',
                     'data' => [$pending, $inProgress, $completed],
                     'backgroundColor' => [
-                        'rgba(156, 163, 175, 0.8)', // gray for pending
-                        'rgba(245, 158, 11, 0.8)', // amber for in_progress
-                        'rgba(34, 197, 94, 0.8)', // green for completed
+                        'rgba(239, 68, 68, 0.8)',
+                        'rgba(245, 158, 11, 0.8)',
+                        'rgba(34, 197, 94, 0.8)',
                     ],
                 ],
             ],

@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Forms\UserForm;
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\User;
+use Filament\Actions;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables;
@@ -15,7 +16,17 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?int $navigationSort = 10;
+    protected static ?int $navigationSort = 5;
+
+    public static function getNavigationIcon(): string
+    {
+        return 'heroicon-o-users';
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return 'User Management';
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -46,11 +57,11 @@ class UserResource extends Resource
                     ]),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

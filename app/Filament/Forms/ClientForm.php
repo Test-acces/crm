@@ -13,6 +13,7 @@ class ClientForm extends BaseForm
                 'required' => true,
                 'rules' => ['string', 'regex:/^[\p{L}\s\-\.\']+$/u', 'min:2'],
                 'placeholder' => 'Enter client name',
+                'helperText' => 'Le nom du client doit contenir au moins 2 caractères.',
             ]),
 
             static::emailInput('email', 'Email Address'),

@@ -18,6 +18,26 @@ class ActivityResource extends Resource
         return 'heroicon-o-clock';
     }
 
+    public static function getNavigationGroup(): ?string
+    {
+        return 'CRM Management';
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return 4;
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'info';
+    }
+
 
     public static function table(Table $table): Table
     {

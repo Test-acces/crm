@@ -12,10 +12,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class CrmStatsWidget extends BaseWidget
 {
-    public static function canView(): bool
-    {
-        return auth()->user()?->canSeeAllClients() ?? false;
-    }
+    protected static ?int $sort = 1;
+
 
     protected function getFilteredClientQuery(): Builder
     {
@@ -86,40 +84,34 @@ class CrmStatsWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        $clientQuery = $this->getFilteredClientQuery();
-        $contactQuery = $this->getFilteredContactQuery();
-        $taskQuery = $this->getFilteredTaskQuery();
-        $activityQuery = $this->getFilteredActivityQuery();
+        $user = auth()->user();
+        $cacheKey = 'crm_stats_' . ($user ? $user->id : 'guest');
 
-        return [
-            Stat::make('Total Clients', $clientQuery->count())
-                ->description('Nombre total de clients')
-                ->descriptionIcon('heroicon-m-building-office')
-                ->color('primary'),
-            Stat::make('Clients Actifs', (clone $clientQuery)->where('status', 'active')->count())
-                ->description('Clients actifs')
-                ->descriptionIcon('heroicon-m-building-office')
-                ->color('success'),
-            Stat::make('Clients Inactifs', (clone $clientQuery)->where('status', 'inactive')->count())
-                ->description('Clients inactifs')
-                ->descriptionIcon('heroicon-m-building-office')
-                ->color('danger'),
-            Stat::make('Total Contacts', $contactQuery->count())
-                ->description('Nombre total de contacts')
-                ->descriptionIcon('heroicon-m-user-group')
-                ->color('info'),
-            Stat::make('Tâches en cours', (clone $taskQuery)->where('status', 'in_progress')->count())
-                ->description('Tâches actives')
-                ->descriptionIcon('heroicon-m-clipboard-document-list')
-                ->color('warning'),
-            Stat::make('Tâches terminées', (clone $taskQuery)->where('status', 'completed')->count())
-                ->description('Tâches complétées')
-                ->descriptionIcon('heroicon-m-check-circle')
-                ->color('success'),
-            Stat::make('Activités récentes', (clone $activityQuery)->where('date', '>=', now()->subWeek())->count())
-                ->description('Cette semaine')
-                ->descriptionIcon('heroicon-m-clock')
-                ->color('gray'),
-        ];
+        return \Cache::remember($cacheKey, 300, function () use ($user) { // Cache for 5 minutes
+            $clientQuery = $this->getFilteredClientQuery();
+            $contactQuery = $this->getFilteredContactQuery();
+            $taskQuery = $this->getFilteredTaskQuery();
+            $activityQuery = $this->getFilteredActivityQuery();
+
+            $timestamp = now()->format('H:i:s');
+            return [
+                Stat::make('Clients', $clientQuery->count())
+                    ->description('Actifs: ' . (clone $clientQuery)->where('status', 'active')->count() . ' | Mis à jour: ' . $timestamp)
+                    ->descriptionIcon('heroicon-m-building-office')
+                    ->color('primary'),
+                Stat::make('Tâches', (clone $taskQuery)->where('status', 'in_progress')->count())
+                    ->description('En cours | Mis à jour: ' . $timestamp)
+                    ->descriptionIcon('heroicon-m-clipboard-document-list')
+                    ->color('warning'),
+                Stat::make('Activités', (clone $activityQuery)->where('date', '>=', now()->subWeek())->count())
+                    ->description('Cette semaine | Mis à jour: ' . $timestamp)
+                    ->descriptionIcon('heroicon-m-clock')
+                    ->color('gray'),
+                Stat::make('Contacts', $contactQuery->count())
+                    ->description('Total | Mis à jour: ' . $timestamp)
+                    ->descriptionIcon('heroicon-m-user-group')
+                    ->color('info'),
+            ];
+        });
     }
 }

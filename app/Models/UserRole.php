@@ -19,6 +19,16 @@ enum UserRole: string
         };
     }
 
+    public function icon(): string
+    {
+        return match($this) {
+            self::ADMIN => 'heroicon-o-shield-check',
+            self::MANAGER => 'heroicon-o-user-group',
+            self::COMMERCIAL => 'heroicon-o-building-storefront',
+            self::VIEWER => 'heroicon-o-eye',
+        };
+    }
+
     public function canSeeAllClients(): bool
     {
         return in_array($this, [self::ADMIN, self::MANAGER]);

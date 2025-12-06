@@ -93,8 +93,33 @@ class ClientResource extends Resource
         return [
             'index' => Pages\ListClients::route('/'),
             'create' => Pages\CreateClient::route('/create'),
+            'view' => Pages\ViewClient::route('/{record}'),
             'edit' => Pages\EditClient::route('/{record}/edit'),
         ];
+    }
+
+    protected static function getCreateFormAction(): Actions\Action
+    {
+        return parent::getCreateFormAction()
+            ->successNotificationTitle('Client créé avec succès')
+            ->successNotification(
+                \Filament\Notifications\Notification::make()
+                    ->title('Client créé')
+                    ->body('Le client a été ajouté à votre CRM.')
+                    ->success()
+            );
+    }
+
+    protected static function getEditFormAction(): Actions\Action
+    {
+        return parent::getEditFormAction()
+            ->successNotificationTitle('Client modifié avec succès')
+            ->successNotification(
+                \Filament\Notifications\Notification::make()
+                    ->title('Client modifié')
+                    ->body('Les informations du client ont été mises à jour.')
+                    ->success()
+            );
     }
 
     public static function getEloquentQuery(): Builder
