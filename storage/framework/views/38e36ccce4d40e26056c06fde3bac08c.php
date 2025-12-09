@@ -1,4 +1,4 @@
-<div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200" style="grid-column: 1 / -1;">
+<div class="bg-white rounded-lg p-6 shadow-sm border border-gray-100" style="grid-column: 1 / -1;">
     <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">

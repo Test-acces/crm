@@ -1,4 +1,4 @@
-<div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200" style="grid-column: 1 / -1;">
+<div class="bg-white rounded-lg p-6 shadow-sm border border-gray-100" style="grid-column: 1 / -1;">
     <h3 class="text-sm font-semibold text-gray-900 mb-4">Actions Rapides</h3>
     <div class="space-y-0">
             <div class="grid grid-cols-6 gap-3">

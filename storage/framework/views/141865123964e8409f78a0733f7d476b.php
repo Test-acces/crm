@@ -1,4 +1,4 @@
-<div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200" style="grid-column: span 2;">
+<div class="bg-white rounded-lg p-6 shadow-sm border border-gray-100" style="grid-column: span 2;">
     <h3 class="text-sm font-semibold text-gray-900 mb-4">Vue d'Ensemble Générale</h3>
     
     <div class="grid grid-cols-4 gap-4">

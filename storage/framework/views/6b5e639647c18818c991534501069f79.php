@@ -1,4 +1,4 @@
-<div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200 h-full" style="grid-column: span 1; grid-row: span 2;">
+<div class="bg-white rounded-lg p-6 shadow-sm border border-gray-100 h-full" style="grid-column: span 1; grid-row: span 2;">
     <h3 class="text-sm font-semibold text-gray-900 mb-4">Activité récente</h3>
     
     <div class="space-y-2 max-h-[600px] overflow-y-auto">
