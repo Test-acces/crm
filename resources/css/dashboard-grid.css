@@ -1,0 +1,14 @@
+/* Force grid layout for dashboard widgets */
+@media (min-width: 768px) {
+    /* Target the widgets container */
+    [x-data*="widgets"] > div {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 1.5rem !important;
+    }
+    
+    /* Make sidebar activities span 2 rows */
+    .row-span-2 {
+        grid-row: span 2 !important;
+    }
+}

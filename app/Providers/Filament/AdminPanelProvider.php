@@ -12,6 +12,7 @@ use App\Filament\Pages\Dashboard;
 use Filament\Support\Colors\Color;
 use Filament\Navigation\MenuItem;
 use Filament\Navigation\NavigationItem;
+use Illuminate\Contracts\View\View;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -40,12 +41,7 @@ class AdminPanelProvider extends PanelProvider
                 Dashboard::class,
             ])
             ->widgets([
-                \App\Filament\Widgets\CrmStatsWidget::class,
-                \App\Filament\Widgets\ClientStatusChartWidget::class,
-                \App\Filament\Widgets\ClientEvolutionChartWidget::class,
-                \App\Filament\Widgets\RecentActivitiesStatsWidget::class,
-                \App\Filament\Widgets\TaskStatusChartWidget::class,
-                \App\Filament\Widgets\PriorityTasksWidget::class,
+                // Only register widgets that are actually used
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -61,11 +57,15 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
+            ->renderHook(
+                'panels::head.start',
+                fn (): View => view('filament.hooks.head')
+            )
             ->databaseNotifications()
             ->databaseNotificationsPolling('30s')
             ->userMenuItems([
                 MenuItem::make()
-                    ->label('Role: ' . (auth()->user()?->role?->label() ?? 'Modeste'))
+                    ->label('Role: ' . (auth()->user()?->role?->label() ?? 'Administration'))
                     ->icon(auth()->user()?->role?->icon() ?? 'heroicon-o-question-mark-circle'),
                 MenuItem::make()
                     ->label('Profile')

@@ -2,35 +2,46 @@
 
 namespace App\Filament\Pages;
 
-use App\Filament\Widgets\ClientEvolutionChartWidget;
-use App\Filament\Widgets\ClientStatusChartWidget;
-use App\Filament\Widgets\CrmStatsWidget;
-use App\Filament\Widgets\PriorityTasksWidget;
-use App\Filament\Widgets\RecentActivitiesStatsWidget;
-use App\Filament\Widgets\TaskStatusChartWidget;
+use App\Filament\Widgets\ClientEvolutionWidget;
+use App\Filament\Widgets\CrmStatsOverviewWidget;
+use App\Filament\Widgets\RecentActivitiesWidget;
+use App\Filament\Widgets\TaskOverviewWidget;
+use App\Filament\Widgets\PerformanceIndicatorsWidget;
+use App\Filament\Widgets\QuickActionsWidget;
+use Filament\Widgets\StatsOverviewWidget;
 use Filament\Pages\Dashboard as BaseDashboard;
 
 class Dashboard extends BaseDashboard
 {
-    protected static ?string $title = 'Tableau de Bord CRM';
+    protected static ?string $title = 'Dashboard';
 
     public function getWidgets(): array
     {
         return [
-            CrmStatsWidget::class,
-            ClientEvolutionChartWidget::class,
-            ClientStatusChartWidget::class,
-            RecentActivitiesStatsWidget::class,
-            TaskStatusChartWidget::class,
-            PriorityTasksWidget::class,
+            \App\Filament\Widgets\DashboardHeaderWidget::class,
+            \App\Filament\Widgets\QuickActionsGridWidget::class,
+            \App\Filament\Widgets\SidebarActivitiesWidget::class,
+            \App\Filament\Widgets\GeneralOverviewWidget::class,
+            \App\Filament\Widgets\PerformanceIndicatorsGridWidget::class,
         ];
     }
 
     public function getColumns(): int | array
     {
         return [
-            'md' => 2,
+            'default' => 1,
+            'sm' => 1,
+            'md' => 3,
+            'lg' => 3,
             'xl' => 3,
+            '2xl' => 3,
+        ];
+    }
+
+    public function getHeaderActions(): array
+    {
+        return [
+            // Actions can be added here if needed
         ];
     }
 }
